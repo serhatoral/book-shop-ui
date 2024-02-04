@@ -2,13 +2,16 @@
     <v-row>
         <v-col cols="12" md="6">
             <v-card-text class="mt-12">
-                <h3 class="text-center">Login in to Your Account</h3> 
-                <h5 style="margin-top: 2%;" class="text-center  text-grey ">Log in to your account then you can access everything </h5>
-                <v-row  justify="center">
+                <h3 class="text-center">Login in to Your Account</h3>
+                <h5 style="margin-top: 2%;" class="text-center  text-grey ">Log in to your account then you can access
+                    everything </h5>
+                <v-row justify="center">
                     <v-col cols="12" sm="8">
 
-                        <v-text-field v-model="email" label="Email" outlined dense color="blue" autocomplete="false" class="mt-16" />
-                        <v-text-field v-model="password" label="Password" outlined dense color="blue" autocomplete="false" type="password" />
+                        <v-text-field v-model="email" label="Email" :error-messages="emailError" outlined dense color="blue"
+                            autocomplete="false" class="mt-16" />
+                        <v-text-field v-model="password" label="Password" :error-messages="passwordError" outlined dense
+                            color="blue" autocomplete="false" type="password" />
                         <v-row>
                             <v-col cols="12" sm="7">
                                 <v-checkbox label="Remember Me" class="mt-n1" color="blue">
@@ -38,9 +41,10 @@
         </v-col>
         <v-col cols="12" md="6" class="rounded-bl-xl" style="background-color:#2196F3 ">
             <div style="text-align: center; padding: 180px 0;">
-                <v-card-text  class="text-white">
+                <v-card-text class="text-white">
                     <h3 class="text-center ">Don't Have an Account Yet?</h3>
-                    <h4 style="margin-top: 2%;" class="text-center">Create a new account and start discovering new books!</h4>
+                    <h4 style="margin-top: 2%;" class="text-center">Create a new account and start discovering new books!
+                    </h4>
                 </v-card-text>
                 <div class="text-center">
                     <v-btn size="large" variant="outlined" color="white" @click="changeStep">SIGN UP</v-btn>
@@ -58,7 +62,8 @@ export default {
 
     data() {
         return {
-
+            emailError: null,
+            passwordError: null,
             email: '',
             password: ''
         }
@@ -73,22 +78,31 @@ export default {
             this.$emit('changeStep', this.step);
         },
 
-         handleLogin(){
-                axios.postData("/auth/generate-token",{
-                    email: this.email,
-                    password: this.password
-                }).then(response=>{
-                    console.log(response)
-                    localStorage.setItem('token',response.data.token)
-                    localStorage.setItem('user',JSON.stringify(response.data.user))
+        handleLogin() {
+            axios.postData("/auth/generate-token", {
+                email: this.email,
+                password: this.password
+            }).then(response => {
+                console.log(response)
+                localStorage.setItem('token', response.data.token)
+                localStorage.setItem('user', JSON.stringify(response.data.user))
 
-                    if(response.status ===200){
-                        this.$router.push('/')
-                    }
-                                           
-                }).catch(error =>{
-                    console.log(error.response)
-                })
+                if (response.status === 200) {
+                    this.$router.push('/')
+                }
+
+            }).catch(error => {
+                if (error.response.status === 400) { // Burada apide yapılan email- password validasyonundan dönen hatalar gösteriliyor. Bu sayede frontend form validasyonu yapmama gerek kalmadı.
+                    this.emailError = error.response.data.email
+                    this.passwordError = error.response.data.password
+                }
+
+                if (error.response.status === 404) { // Eğer kullanıcı kayıtlı değilse onun hatası gösteriliyor.
+                    this.emailError = error.response.data.error
+                    this.passwordError = null
+                }
+                console.log(error.response)
+            })
         }
     }
 }
@@ -102,5 +116,4 @@ export default {
 
 .v-application .rounded-br-xl {
     border-bottom-right-radius: 300px !important;
-}
-</style>
+}</style>
