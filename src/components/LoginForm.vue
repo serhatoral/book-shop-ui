@@ -7,8 +7,8 @@
                 <v-row  justify="center">
                     <v-col cols="12" sm="8">
 
-                        <v-text-field label="Email" outlined dense color="blue" autocomplete="false" class="mt-16" />
-                        <v-text-field label="Password" outlined dense color="blue" autocomplete="false" type="password" />
+                        <v-text-field v-model="email" label="Email" outlined dense color="blue" autocomplete="false" class="mt-16" />
+                        <v-text-field v-model="password" label="Password" outlined dense color="blue" autocomplete="false" type="password" />
                         <v-row>
                             <v-col cols="12" sm="7">
                                 <v-checkbox label="Remember Me" class="mt-n1" color="blue">
@@ -18,7 +18,7 @@
                                 <span class="caption text-blue">Forgot password</span>
                             </v-col>
                         </v-row>
-                        <v-btn color="blue" dark block tile>Log in</v-btn>
+                        <v-btn color="blue" @click="handleLogin" dark block tile>Log in</v-btn>
 
                         <!-- <h5 class="text-center  text-grey mt-4 mb-3">Or Log in using</h5>
                         <div class="d-flex  justify-space-between align-center mx-10 mb-16">
@@ -52,13 +52,15 @@
 </template>
 
 <script>
-
+import axios from '@/api/axios';
 
 export default {
 
     data() {
         return {
 
+            email: '',
+            password: ''
         }
     },
 
@@ -69,6 +71,20 @@ export default {
 
             // Değişikliği üst componente emit et
             this.$emit('changeStep', this.step);
+        },
+
+         handleLogin(){
+                axios.postData("/auth/generate-token",{
+                    email: this.email,
+                    password: this.password
+                }).then(response=>{
+                    console.log(response)
+                    localStorage.setItem('token',response.data.token)
+                    localStorage.setItem('user',JSON.stringify(response.data.user))
+                   
+                }).catch(error =>{
+                    console.log(error.response)
+                })
         }
     }
 }

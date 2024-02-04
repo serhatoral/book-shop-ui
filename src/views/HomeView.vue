@@ -56,12 +56,15 @@ export default defineComponent({
 
   data() {
     return {
-      
+     user : {}
     }
+    
   },
 
   created(){
-   this.fetchData();
+    
+    this.user = JSON.parse(localStorage.getItem('user'));
+    console.log(this.user.firstName);
    
   },
   components: {
