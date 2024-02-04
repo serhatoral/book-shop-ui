@@ -81,7 +81,11 @@ export default {
                     console.log(response)
                     localStorage.setItem('token',response.data.token)
                     localStorage.setItem('user',JSON.stringify(response.data.user))
-                   
+
+                    if(response.status ===200){
+                        this.$router.push('/')
+                    }
+                                           
                 }).catch(error =>{
                     console.log(error.response)
                 })

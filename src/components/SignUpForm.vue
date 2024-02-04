@@ -21,16 +21,18 @@
                     <v-col cols="12" sm="8">
                         <v-row>
                             <v-col cols="12" sm="6">
-                                <v-text-field label="First Name" outlined dense color="blue" autocomplete="false"
-                                    class="mt-4" />
+                                <v-text-field v-model="createUserRequest[0].firstName" label="First Name" outlined dense
+                                    color="blue" autocomplete="false" class="mt-4" />
                             </v-col>
                             <v-col cols="12" sm="6">
-                                <v-text-field label="Last Name" outlined dense color="blue" autocomplete="false"
-                                    class="mt-4" />
+                                <v-text-field v-model="createUserRequest[0].lastName" label="Last Name" outlined dense
+                                    color="blue" autocomplete="false" class="mt-4" />
                             </v-col>
                         </v-row>
-                        <v-text-field label="Email" outlined dense color="blue" autocomplete="false" />
-                        <v-text-field label="Password" outlined dense color="blue" autocomplete="false" type="password" />
+                        <v-text-field v-model="createUserRequest[0].email" label="Email" outlined dense color="blue"
+                            autocomplete="false" />
+                        <v-text-field v-model="createUserRequest[0].password" label="Password" outlined dense color="blue"
+                            autocomplete="false" type="password" />
                         <v-row>
                             <v-col cols="12" sm="7">
                                 <v-checkbox label="I Accept AAE" class="mt-n1" color="blue">
@@ -40,7 +42,7 @@
                                 <span class="caption blue--text ml-n4">Terms &Conditions</span>
                             </v-col>
                         </v-row>
-                        <v-btn color="blue" dark block tile>Sign up</v-btn>
+                        <v-btn color="blue" dark block tile @click="handleSingup">Sign up</v-btn>
 
                         <!-- <h5 class="text-center  grey--text mt-4 mb-3">Or Sign up using</h5>
                         <div class="d-flex  justify-space-between align-center mx-10 mb-11">
@@ -63,9 +65,24 @@
 
 
 <script>
-
+import axios from '@/api/axios';
 
 export default {
+
+
+    data() {
+
+        return {
+            createUserRequest: [
+                {
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    password: ''
+                }
+            ]
+        }
+    },
 
     methods: {
         changeStep() {
@@ -74,6 +91,29 @@ export default {
 
             // Değişikliği üst componente emit et
             this.$emit('changeStep', this.step);
+        },
+
+        handleSingup() {
+
+            axios.postData('/customer/create', this.createUserRequest[0])
+                .then(response => {
+                    console.log(response.data)
+                    if (response.status === 200) {
+                        this.createUserRequest = [
+                            {
+                                firstName: '',
+                                lastName: '',
+                                email: '',
+                                password: ''
+                            }
+                        ];
+                        this.changeStep();
+
+                    }
+                }).catch(error => {
+                    console.log(error.response)
+                })
+
         }
     }
 
