@@ -1,9 +1,11 @@
 <template>
   <v-layout class="rounded rounded-md">
-    
+
     <NavBar />
     <SideBar />
-    <v-main style="margin-top: 4%;">
+    <v-main style="margin-top: 3%;">
+
+      <SearchBar @searchText="getBooksTitleContaining"/>
       <CardList v-if="bookList" :data="bookList" />
       <CustomPagination v-if="bookList" :total-page-number="bookList.totalPages" @changePage="getBooks" />
     </v-main>
@@ -21,6 +23,7 @@ import SideBar from '@/components/SideBar.vue'
 import CardList from '@/components/CardList.vue';
 import axios from '../api/axios';
 import CustomPagination from '@/components/CustomPagination.vue';
+import SearchBar from '@/components/SearchBar.vue'
 
 
 export default defineComponent({
@@ -30,7 +33,8 @@ export default defineComponent({
     NavBar,
     SideBar,
     CardList,
-    CustomPagination
+    CustomPagination,
+    SearchBar
   },
 
   data() {
@@ -38,7 +42,7 @@ export default defineComponent({
       user: {},
       bookListPage: 0,
       bookListTotalPages: null,
-      bookList: null
+      bookList: null,
     }
 
   },
@@ -54,7 +58,14 @@ export default defineComponent({
         .then(response => {
           this.bookList = response.data
           this.bookListTotalPages = this.bookList.totalPages
-          console.log(this.bookList)
+        })
+    },
+
+    getBooksTitleContaining(searchText,page){
+      axios.getData(`book/get-by-title-containing?title=${searchText}&page=${page}`)
+        .then(response => {
+          this.bookList = response.data
+          this.bookListTotalPages = this.bookList.totalPages
         })
     }
   },
