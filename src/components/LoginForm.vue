@@ -53,15 +53,29 @@
             </div>
         </v-col>
     </v-row>
+
+    <div class="text-center">
+        <v-snackbar color="red-darken-2" location=" top" timeout="8000" v-model="snackbar" multi-line>
+            {{ errorMessage }}
+
+            <template v-slot:actions>
+                <v-btn color="white" variant="text" @click="snackbar = false">
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
+    </div>
 </template>
 
 <script>
 import axios from '@/api/axios';
 
 export default {
-
+    emits: ['changeStep'],
     data() {
         return {
+            snackbar: false,
+            errorMessage: null,
             emailError: null,
             passwordError: null,
             email: '',
@@ -98,8 +112,9 @@ export default {
                 }
 
                 if (error.response.status === 404) { // Eğer kullanıcı kayıtlı değilse onun hatası gösteriliyor.
-                    this.emailError = error.response.data.error
+                    this.errorMessage = error.response.data.error
                     this.passwordError = null
+                    this.snackbar = true
                 }
                 console.log(error.response)
             })
@@ -116,4 +131,5 @@ export default {
 
 .v-application .rounded-br-xl {
     border-bottom-right-radius: 300px !important;
-}</style>
+}
+</style>

@@ -21,18 +21,19 @@
                     <v-col cols="12" sm="8">
                         <v-row>
                             <v-col cols="12" sm="6">
-                                <v-text-field v-model="createUserRequest[0].firstName" label="First Name" outlined dense
-                                    color="blue" autocomplete="false" class="mt-4" />
+                                <v-text-field v-model="createUserRequest[0].firstName"
+                                    :error-messages="fieldsError.firstName" label="First Name" outlined dense color="blue"
+                                    autocomplete="false" class="mt-4" />
                             </v-col>
                             <v-col cols="12" sm="6">
-                                <v-text-field v-model="createUserRequest[0].lastName" label="Last Name" outlined dense
-                                    color="blue" autocomplete="false" class="mt-4" />
+                                <v-text-field v-model="createUserRequest[0].lastName" :error-messages="fieldsError.lastName"
+                                    label="Last Name" outlined dense color="blue" autocomplete="false" class="mt-4" />
                             </v-col>
                         </v-row>
-                        <v-text-field v-model="createUserRequest[0].email" label="Email" outlined dense color="blue"
-                            autocomplete="false" />
-                        <v-text-field v-model="createUserRequest[0].password" label="Password" outlined dense color="blue"
-                            autocomplete="false" type="password" />
+                        <v-text-field v-model="createUserRequest[0].email" :error-messages="fieldsError.email" label="Email"
+                            outlined dense color="blue" autocomplete="false" />
+                        <v-text-field v-model="createUserRequest[0].password" :error-messages="fieldsError.password"
+                            label="Password" outlined dense color="blue" autocomplete="false" type="password" />
                         <v-row>
                             <v-col cols="12" sm="7">
                                 <v-checkbox label="I Accept AAE" class="mt-n1" color="blue">
@@ -61,6 +62,18 @@
             </v-card-text>
         </v-col>
     </v-row>
+
+    <div class="text-center">
+        <v-snackbar color="red-darken-2" location=" top" timeout="8000" v-model="snackbar" multi-line>
+            {{ fieldsError.errorMessage }}
+
+            <template v-slot:actions>
+                <v-btn color="white" variant="text" @click="snackbar = false">
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
+    </div>
 </template>
 
 
@@ -68,11 +81,19 @@
 import axios from '@/api/axios';
 
 export default {
-
+    emits: ['changeStep'],
 
     data() {
 
         return {
+            snackbar: false,
+            fieldsError: {
+                firstName: null,
+                lastName: null,
+                email: null,
+                password: null,
+                errorMessage: null
+            },
             createUserRequest: [
                 {
                     firstName: '',
@@ -111,6 +132,19 @@ export default {
 
                     }
                 }).catch(error => {
+
+                    if (error.response.status === 400) {
+                        this.fieldsError.email = error.response.data.email;
+                        this.fieldsError.password = error.response.data.password;
+                        this.fieldsError.firstName = error.response.data.firstName;
+                        this.fieldsError.lastName = error.response.data.lastName;
+
+                        if (error.response.data.error) {
+                            this.fieldsError.errorMessage = error.response.data.error;
+                            this.snackbar = true
+                        }
+
+                    }
                     console.log(error.response)
                 })
 
