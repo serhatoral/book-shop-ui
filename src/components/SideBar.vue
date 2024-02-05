@@ -6,9 +6,9 @@
       >
         <v-list>
           <v-list-item
-            prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-            title="Sandra Adams"
-            subtitle="sandra_a88@gmailcom"
+            :prepend-avatar= avatar
+            :title=username
+            :subtitle=email
           ></v-list-item>
         </v-list>
 
@@ -21,3 +21,29 @@
         </v-list>
       </v-navigation-drawer>
 </template>
+
+
+<script>
+
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+
+  data(){
+    return{
+      username: 'User',
+      email: 'user@xxxxx.com',
+      avatar: 'https://cdn-icons-png.flaticon.com/512/6596/6596121.png'
+
+    }
+  },
+  created(){
+    if(localStorage.getItem('token')){
+      let user = JSON.parse(localStorage.getItem('user'));
+      this.username = user.firstName +' '+ user.lastName;
+      this.email = user.email
+    }
+  }
+});
+
+</script>

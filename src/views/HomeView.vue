@@ -1,38 +1,11 @@
 <template>
   <v-layout class="rounded rounded-md">
-
+    
     <NavBar />
-
     <SideBar />
-
-    <v-main>
-      <v-container class="d-flex align-center justify-center" style="max-width: 75%;">
-
-
-        <v-row>
-          <v-col v-for="n in 100" :key="n" cols="3">
-
-            <v-card width="250" height="250" hover>
-
-              <v-card-item>
-                <div>
-                  <div class="text-overline mb-1">
-                    Test
-                  </div>
-                  <div class="text-h6 mb-1">
-                    Headline
-                  </div>
-                </div>
-              </v-card-item>
-
-
-
-             
-            </v-card>
-
-          </v-col>
-        </v-row>
-      </v-container>
+    <v-main style="margin-top: 4%;">
+      <CardList v-if="bookList" :data="bookList" />
+      <CustomPagination v-if="bookList" :total-page-number="bookList.totalPages" @changePage="getBooks" />
     </v-main>
 
   </v-layout>
@@ -43,63 +16,47 @@
 <script>
 import { defineComponent } from 'vue';
 
-// Components
-//import HelloWorld from '../components/HelloWorld.vue';
 import NavBar from '@/components/NavBar.vue';
 import SideBar from '@/components/SideBar.vue'
-import api from '../api/axios'
+import CardList from '@/components/CardList.vue';
+import axios from '../api/axios';
+import CustomPagination from '@/components/CustomPagination.vue';
 
 
 export default defineComponent({
   name: 'HomeView',
 
+  components: {
+    NavBar,
+    SideBar,
+    CardList,
+    CustomPagination
+  },
 
   data() {
     return {
-     user : {}
+      user: {},
+      bookListPage: 0,
+      bookListTotalPages: null,
+      bookList: null
     }
-    
-  },
 
-  created(){
-    
+  },
+  created() {
     this.user = JSON.parse(localStorage.getItem('user'));
-    console.log(this.user.firstName);
-   
-  },
-  components: {
-    NavBar,
-    SideBar
-  },
+    this.getBooks(this.bookListPage);
 
+  },
   methods: {
-    fetchData() {
-      
-      api.getData('/customer/1')
-        .then(response => {
-          
-          console.log(response.data);
-          
-        })
-        .catch(error => {
-          // Handle the error
-          console.error('Error fetching data:', error);
-        });
-    },
 
-    postData() {
-      
-      const dataToSend = { /* your data */ };
-      api.postData(dataToSend)
+    getBooks(page) {
+      axios.getData(`book/get-with-page?page=${page}`)
         .then(response => {
-          // Handle the response data
-          console.log(response.data);
+          this.bookList = response.data
+          this.bookListTotalPages = this.bookList.totalPages
+          console.log(this.bookList)
         })
-        .catch(error => {
-          // Handle the error
-          console.error('Error posting data:', error);
-        });
-    },
+    }
   },
 });
 </script>
