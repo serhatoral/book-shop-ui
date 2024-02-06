@@ -2,7 +2,7 @@
     <v-row class="justify-center mb-3">
         <v-card class="pa-4" flat width="50%">
             <v-toolbar dense floating>
-                <v-text-field v-model="text" hide-details single-line></v-text-field>
+                <v-text-field @keyup.enter="search" v-model="text" hide-details single-line></v-text-field>
                 <v-btn @click="search" icon>
                     <v-icon>mdi-magnify</v-icon>
                 </v-btn>

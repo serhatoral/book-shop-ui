@@ -4,10 +4,9 @@
     <NavBar />
     <SideBar />
     <v-main style="margin-top: 3%;">
-
-      <SearchBar @searchText="getBooksTitleContaining"/>
+      <SearchBar @searchText="setText"/>
       <CardList v-if="bookList" :data="bookList" />
-      <CustomPagination v-if="bookList" :total-page-number="bookList.totalPages" @changePage="getBooks" />
+      <CustomPagination v-if="bookList" :total-page-number="bookList.totalPages" @changePage="setPage" />
     </v-main>
 
   </v-layout>
@@ -43,6 +42,7 @@ export default defineComponent({
       bookListPage: 0,
       bookListTotalPages: null,
       bookList: null,
+      searchText:null,
     }
 
   },
@@ -67,6 +67,20 @@ export default defineComponent({
           this.bookList = response.data
           this.bookListTotalPages = this.bookList.totalPages
         })
+    },
+    setText(searchText){  // bu method search bar'da herhangi bir değişiklik olursa çalışacak
+      this.searchText = searchText;
+      this.getBooksTitleContaining(searchText,0) // 0 başlangıç page numarası. Bura sadece ilk arama sorgusunda gönderilecek. 
+    },
+    setPage(page){ //tüm page değişiklik istekleri burayı tetikleyecek
+      this.bookListPage = page
+      if(this.searchText !='' && this.searchText != null){
+        console.log("search var")
+        this.getBooksTitleContaining(this.searchText,page)
+      }else{
+        console.log("search yok")
+        this.getBooks(page)
+      }
     }
   },
 });
