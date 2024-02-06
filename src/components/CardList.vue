@@ -3,7 +3,7 @@
         <v-container class="d-flex align-center justify-center" style="max-width: 75%;">
             <v-row v-if="data.numberOfElements > 0">
                 <v-col v-for="n in data.numberOfElements" :key="n" cols="3">
-                    <v-card :color="randomColor()" width="250" height="250" hover>
+                    <v-card :color="randomColor()" width="250" height="250" hover class="rounded-shaped">
                         <v-card-item>
                             {{ data.content[n - 1].publicationDate.substring(0, 10) }}
 
