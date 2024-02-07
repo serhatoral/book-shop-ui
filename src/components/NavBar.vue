@@ -18,16 +18,20 @@
 
                 <v-list v-if="isLogin">
                     <v-list-item :prepend-avatar=avatar :title=username :subtitle=email></v-list-item>
+                    <v-divider class="mt-2"></v-divider>
+                    <v-list-item class="d-flex justify-center mt-3">
+
+                        <v-btn color="#D32F2F" size="large" class="mb-3" @click="login">
+                            Logout <v-icon class="ml-2">mdi-login</v-icon>
+                        </v-btn>
+                    </v-list-item>
                 </v-list>
                 <v-divider></v-divider>
 
-                <v-btn color="#BBDEFB"  size="large" class="mb-3" v-if="isLogin === false">
+                <v-btn color="#BBDEFB" size="large" class="mb-3" v-if="isLogin === false" @click="login">
                     Login <v-icon class="ml-2">mdi-login</v-icon>
                 </v-btn>
 
-                <v-btn color="#B2DFDB" size="large" v-if="isLogin === false">
-                    Sign Up <v-icon class="ml-2">mdi-logout</v-icon>
-                </v-btn>
             </v-menu>
         </div>
 
@@ -49,12 +53,18 @@ export default {
         avatar: 'https://cdn-icons-png.flaticon.com/512/6596/6596121.png',
         isLogin: localStorage.getItem('token') ? true : false
     }),
-    
+
     created() {
         if (this.isLogin) {
             let user = JSON.parse(localStorage.getItem('user'));
             this.username = user.firstName + ' ' + user.lastName;
             this.email = user.email
+        }
+    },
+    methods: {
+        login() { // login- logout işleminin ikisini de yapar
+            localStorage.clear();
+            this.$router.push('/login')
         }
     }
 }
