@@ -6,7 +6,7 @@
             <v-img gradient="to top right, rgba(19,84,122,.8), rgba(128,208,199,.8)"></v-img>
         </template>
 
-        <v-app-bar-title style="margin-left: 5%;">Expoler the books...</v-app-bar-title>
+        <v-app-bar-title style="margin-left: 5%;"> {{ title }} </v-app-bar-title>
 
         <v-spacer></v-spacer>
 
@@ -17,7 +17,7 @@
                 </template>
 
                 <v-list v-if="isLogin">
-                    <v-list-item :prepend-avatar=avatar :title=username :subtitle=email></v-list-item>
+                    <v-list-item @click="this.$router.push('/profile')" :prepend-avatar=avatar :title=username :subtitle=email></v-list-item>
                     <v-divider class="mt-2"></v-divider>
                     <v-list-item class="d-flex justify-center mt-3">
 
@@ -42,6 +42,9 @@
         <v-btn icon>
             <v-icon>mdi-heart</v-icon>
         </v-btn>
+        <v-btn @click="this.$router.push('/')" icon>
+            <v-icon>mdi-home</v-icon>
+        </v-btn>
 
     </v-app-bar>
 </template>
@@ -49,6 +52,7 @@
 
 <script>
 export default {
+    props:['title'],
     data: () => ({
         avatar: 'https://cdn-icons-png.flaticon.com/512/6596/6596121.png',
         isLogin: localStorage.getItem('token') ? true : false

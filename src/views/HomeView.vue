@@ -1,7 +1,7 @@
 <template>
   <v-layout class="rounded rounded-md">
 
-    <NavBar />
+    <NavBar :title="'Explore the books...'"/>
     <SideBar />
     <v-main style="margin-top: 3%; background-color:#F8F9F9;">
       <SearchBar @searchText="setText"/>
