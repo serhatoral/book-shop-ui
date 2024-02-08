@@ -33,6 +33,7 @@ export default defineComponent({
         return {
             step: 1
         }
+
     },
     methods: {
         updateStep(newStep) {

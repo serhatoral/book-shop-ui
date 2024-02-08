@@ -7,22 +7,24 @@
                     everything </h5>
                 <v-row justify="center">
                     <v-col cols="12" sm="8">
-
-                        <v-text-field v-model="email" label="Email" :error-messages="emailError" outlined dense color="blue"
-                            autocomplete="false" class="mt-16" />
-                        <v-text-field v-model="password" label="Password" :error-messages="passwordError" outlined dense
-                            color="blue" autocomplete="false" type="password" />
-                        <v-row>
-                            <v-col cols="12" sm="7">
-                                <v-checkbox label="Remember Me" class="mt-n1" color="blue">
-                                </v-checkbox>
-                            </v-col>
-                            <v-col cols="12" sm="5">
-                                <span class="caption text-blue">Forgot password</span>
-                            </v-col>
-                        </v-row>
-                        <v-btn color="blue" @click="handleLogin" dark block tile>Log in</v-btn>
-
+                        <v-form>
+                            <v-text-field :rules="emailRules" v-model="email" label="Email" :error-messages="emailError"
+                                outlined dense color="blue" autocomplete="false" class="mt-16" />
+                            <v-text-field :rules="passwordRules" v-model="password" label="Password"
+                                :error-messages="passwordError" outlined dense color="blue" autocomplete="false"
+                                type="password" />
+                            <v-row>
+                                <v-col cols="12" sm="7">
+                                    <v-checkbox label="Remember Me" class="mt-n1" color="blue">
+                                    </v-checkbox>
+                                </v-col>
+                                <v-col cols="12" sm="5">
+                                    <span class="caption text-blue">Forgot password</span>
+                                </v-col>
+                            </v-row>
+                            <v-btn color="blue" :disabled=isButtonDisable @click="handleLogin" dark block tile>Log
+                                in</v-btn>
+                        </v-form>
                         <!-- <h5 class="text-center  text-grey mt-4 mb-3">Or Log in using</h5>
                         <div class="d-flex  justify-space-between align-center mx-10 mb-16">
                             <v-btn depressed outlined color="grey">
@@ -79,7 +81,49 @@ export default {
             emailError: null,
             passwordError: null,
             email: '',
-            password: ''
+            password: '',
+            isButtonDisable: true,
+            passwordRules: [
+                value => {
+                    if (value.length >= 3) {
+                        this.isButtonDisable = false
+                        return true
+                    }
+                    this.isButtonDisable = true
+                    return 'password must be more than three characters'
+                },
+            ],
+            emailRules: [
+                
+                 value => {
+                    if (value) {
+                        this.isButtonDisable = false
+                        return true
+                    }
+                    this.isButtonDisable = true
+                    return 'You must enter a email.'
+                },
+                value => {
+                    if (value?.length <= 50) {
+                        this.isButtonDisable = false
+                        return true
+                    }
+
+                    this.isButtonDisable = true
+                    return 'Name must be less than 50 characters.'
+                },
+                value => {
+                    if (this.emailRegex(value)) {
+                        this.isButtonDisable = false
+                        if (this.password.length === 0)
+                            this.isButtonDisable = true
+                        return true
+                    }
+                    this.isButtonDisable = true
+                    return 'E-mail must be valid'
+                },
+
+            ],
         }
     },
 
@@ -91,7 +135,13 @@ export default {
             // Değişikliği üst componente emit et
             this.$emit('changeStep', this.step);
         },
-
+        emailRegex(email) {
+            
+            if (email && /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+                return true
+            }
+            return false
+        },
         handleLogin() {
             axios.postData("/auth/generate-token", {
                 email: this.email,
