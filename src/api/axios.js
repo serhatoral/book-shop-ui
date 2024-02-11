@@ -14,6 +14,17 @@ export default {
     return apiClient.get(uri);
   },
 
+  getDataWithToken(uri) {
+    if(localStorage.getItem('token')){
+      return apiClient.get(uri,{
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      });
+    }
+      
+  },
+
   // Example POST request
   postData(uri,data) {
     return apiClient.post(uri, data);
