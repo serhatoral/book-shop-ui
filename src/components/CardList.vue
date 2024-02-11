@@ -7,8 +7,8 @@
                         <v-card-item>
                             <v-row justify="space-between" style="margin-top: 2px; margin-right:1px;">
                                 <p class="mt-3 ml-3">{{ data.content[n - 1].publicationDate.substring(0, 10) }}</p>
-                                <v-btn v-if="isLiked(data.content[n - 1].id)" @click="removeLike(data.content[n - 1].id)" class="mr-1" variant="text" color="red"
-                                    icon="mdi-heart"></v-btn>
+                                <v-btn v-if="isLiked(data.content[n - 1].id)" @click="removeLike(data.content[n - 1].id)"
+                                    class="mr-1" variant="text" color="red" icon="mdi-heart"></v-btn>
                                 <v-btn v-else-if="isLogin" @click="like(data.content[n - 1].id)" class="mr-1" variant="text"
                                     icon="mdi-heart"></v-btn>
 
@@ -26,6 +26,17 @@
             </v-row>
         </v-container>
     </div>
+
+    <v-snackbar style="margin-top: 7%;" v-model="snackbar" location="right top" :timeout="timeout">
+        {{ snackbarMessage }}
+
+        <template v-slot:actions>
+            <v-btn color="blue" variant="text" @click="snackbar = false">
+                Close
+            </v-btn>
+        </template>
+    </v-snackbar>
+
 </template>
 
 
@@ -42,6 +53,9 @@ export default defineComponent({
             likedBooks: [],
             test: true,
             length: 0,
+            snackbar: false,
+            snackbarMessage:'',
+            timeout: 2000,
             colors: [
                 '#92D4F0', '#749DD3', '#FECB98', '#FFDB99', '#FFEEAD',
                 '#C3B998', '#6594AB', '#95BC8C', '#D1D599', '#C4AA93',
@@ -72,6 +86,7 @@ export default defineComponent({
                     response.data.likedBooks.forEach(element => {
                         this.likedBooks.push(element.id)
                     });
+                    console.log(this.likedBooks)
 
                 }).catch(error => {
                     if (error.response.data.error === 'Jwt is Expired')
@@ -86,18 +101,22 @@ export default defineComponent({
             if (this.isLogin) {
                 axios.getDataWithToken(`like/book?customerId=${this.userId}&bookId=${bookId}`)
                     .then(response => {
-                        console.log(response.data)
                         this.likedBooks.push(bookId)
+                        this.snackbarMessage= response.data.message
+                        this.snackbar = true
                     })
             }
         },
 
-        removeLike(bookId){
+        removeLike(bookId) {
             if (this.isLogin) {
                 axios.getDataWithToken(`like/remove/book?customerId=${this.userId}&bookId=${bookId}`)
                     .then(response => {
-                        console.log(response.data)
-                        this.likedBooks.pop(bookId)
+                        let index = this.likedBooks.indexOf(bookId)
+                        this.likedBooks.splice(index,1)
+                        this.snackbarMessage= response.data.message
+                        this.snackbar = true
+                        
                     })
             }
         },
