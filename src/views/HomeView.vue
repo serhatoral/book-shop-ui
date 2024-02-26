@@ -3,7 +3,7 @@
 
     <NavBar :title="'Explore the books...'"/>
     <SideBar />
-    <v-main style="margin-top: 3%; background-color:#F8F9F9;">
+    <v-main style="margin-top: 3%;">
       <SearchBar @searchText="setText"/>
       <CardList v-if="bookList" :data="bookList" />
       <CustomPagination v-if="bookList" :total-page-number="bookList.totalPages" @changePage="setPage" />
